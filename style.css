@@ -6,21 +6,35 @@ body {
   justify-content: center;
   align-items: center;
   height: 100vh;
+
+  /* Fundo criativo com gradiente */
   background: linear-gradient(to bottom, #87ceeb 0%, #f0f8ff 40%, #98fb98 100%);
   background-attachment: fixed;
 }
- 
- 
+
 .pokedex {
-  display: flex;
-  width: 900px;
-  height: 600px;
+  width: 800px;
+  max-width: 95%;
+  background: #d32f2f;
+  border: 6px solid #b71c1c;
   border-radius: 20px;
-  overflow: hidden;
-  background: #c62828; /* vermelho da pokedex */
-  box-shadow: 0 0 40px rgba(0,0,0,.7);
+  padding: 20px;
+  display: flex;
+  box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.6);
+
+  /* Animação de flutuação */
+  animation: flutuar 3s ease-in-out infinite;
 }
- 
+
+@keyframes flutuar {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-15px);
+  }
+}
+
 /* Lado esquerdo */
 .left {
   flex: 1;
