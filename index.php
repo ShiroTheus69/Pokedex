@@ -62,23 +62,17 @@ foreach ($species['flavor_text_entries'] as $entry) {
   </div>
  
   <!-- Parte direita -->
-  <div class="right">
+  <div class="right"
     <div class="desc-screen">
       <p><?= nl2br($flavor) ?></p>
     </div>
     <div class="buttons">
-      <span class="square"></span>
-      <span class="square"></span>
-      <span class="rect"></span>
-      <span class="rect"></span>
+  <span class="square sound-btn"></span>
+  <span class="square sound-btn"></span>
+  <span class="rect sound-btn"></span>
+  <span class="rect sound-btn"></span>
     </div>
   </div>
-</div>
-<div class="buttons">
-  <span class="square sound-btn"></span>
-  <span class="square sound-btn"></span>
-  <span class="rect sound-btn"></span>
-  <span class="rect sound-btn"></span>
 </div>
 </body>
 </html>
