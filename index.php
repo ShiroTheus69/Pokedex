@@ -74,6 +74,27 @@ foreach ($species['flavor_text_entries'] as $entry) {
     </div>
   </div>
 </div>
+<div class="buttons">
+  <span class="square sound-btn"></span>
+  <span class="square sound-btn"></span>
+  <span class="rect sound-btn"></span>
+  <span class="rect sound-btn"></span>
+</div>
 </body>
 </html>
+
+<script>
+  // Nome do Pokémon atual em minúsculo
+  const pokemonName = "<?= strtolower($name) ?>";
+  // Cria um elemento de áudio
+  const audio = new Audio(`https://play.pokemonshowdown.com/audio/cries/${pokemonName}.ogg`);
+  
+  // Ao clicar em qualquer botão com classe .sound-btn, toca o som
+  document.querySelectorAll('.sound-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      audio.currentTime = 0;  // reinicia
+      audio.play();
+    });
+  });
+</script>
  
