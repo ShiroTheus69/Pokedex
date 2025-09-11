@@ -1,24 +1,42 @@
 body {
-  background-color: #e63946;
-  font-family: 'Press Start 2P', cursive;
-  color: #fff;
   margin: 0;
-  padding: 0;
+  font-family: Arial, sans-serif;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(to bottom, #87ceeb 0%, #f0f8ff 40%, #98fb98 100%);
+  background-attachment: fixed;
 }
 
 .pokedex {
-  display: flex;
-  max-width: 900px;
-  margin: 40px auto;
-  border: 8px solid #000;
+  width: 800px;
+  max-width: 95%;
+  background: #d32f2f;
+  border: 6px solid #b71c1c;
   border-radius: 20px;
-  background-color: #d62828;
-  box-shadow: 0 0 20px #000;
+  padding: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.6);
+  animation: flutuar 3s ease-in-out infinite;
 }
 
-.left, .right {
-  padding: 20px;
+@keyframes flutuar {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-15px); }
+}
+
+/* Lado esquerdo */
+.left {
   flex: 1;
+  min-width: 300px;
+  padding: 20px;
+  background: #d32f2f;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .lights {
@@ -26,90 +44,141 @@ body {
   gap: 10px;
   margin-bottom: 20px;
 }
-
 .light {
-  width: 20px;
-  height: 20px;
+  width: 25px;
+  height: 25px;
   border-radius: 50%;
-  border: 2px solid #000;
+  border: 2px solid #111;
 }
-
-.blue { background-color: #0077b6; }
-.red { background-color: #d00000; }
-.yellow { background-color: #ffdd00; }
-.green { background-color: #00b050; }
+.light.blue { background: #2196f3; }
+.light.red { background: #e53935; }
+.light.yellow { background: #fdd835; }
+.light.green { background: #43a047; }
 
 .screen {
-  background-color: #000;
-  padding: 10px;
-  border: 4px inset #333;
-  border-radius: 10px;
-  text-align: center;
+  background: #111;
+  border: 5px solid #333;
+  border-radius: 12px;
+  width: 250px;
+  height: 250px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
-
 .screen img {
   max-width: 100%;
-  height: auto;
+  max-height: 100%;
 }
 
 .info {
-  margin-top: 20px;
+  margin-top: 15px;
+  text-align: center;
   font-size: 14px;
 }
 
 .controls {
-  margin-top: 20px;
+  margin-top: auto;
   display: flex;
-  justify-content: space-between;
+  gap: 20px;
 }
-
 .btn {
-  background-color: #000;
+  background: #111;
   color: #fff;
-  padding: 10px 20px;
+  padding: 10px 14px;
   text-decoration: none;
   border-radius: 8px;
-  font-weight: bold;
+  font-size: 20px;
+  transition: background 0.3s;
+}
+.btn:hover {
+  background: #333;
 }
 
+/* Filtros */
+.filters {
+  margin-top: 20px;
+  width: 100%;
+}
+.filters form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.filters select, .filters button {
+  padding: 8px;
+  border-radius: 6px;
+  border: none;
+  font-size: 14px;
+}
+.filters button {
+  background: #111;
+  color: #fff;
+  cursor: pointer;
+}
+.filters button:hover {
+  background: #333;
+}
+
+/* Lado direito */
 .right {
-  background-color: #fefae0;
-  color: #000;
-  border-left: 4px solid #000;
-  border-radius: 0 20px 20px 0;
+  flex: 1;
+  min-width: 300px;
+  background: #b71c1c;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 .desc-screen {
-  background-color: #000;
-  color: #fff;
-  padding: 15px;
+  flex: 1;
+  background: #000;
+  border: 4px solid #333;
   border-radius: 10px;
-  font-size: 12px;
-  height: 150px;
+  padding: 10px;
+  font-size: 14px;
   overflow-y: auto;
-  border: 4px inset #333;
+  max-height: 150px;
 }
 
 .buttons {
-  margin-top: 20px;
   display: flex;
-  gap: 10px;
+  gap: 12px;
   flex-wrap: wrap;
 }
-
-.square, .rect {
-  background-color: #333;
-  border: 2px solid #000;
+.buttons button {
+  background: #eee;
+  color: #111;
+  border: 2px solid #111;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+.buttons button:hover {
+  background: #ccc;
 }
 
-.square {
-  width: 30px;
-  height: 30px;
-  border-radius: 4px;
+/* Evoluções */
+#evolutions {
+  background: #000;
+  border: 2px solid #333;
+  border-radius: 10px;
+  padding: 10px;
+  font-size: 14px;
 }
-
-.rect {
-  width: 60px;
-  height: 20px;
-  border-radius: 4px;
+#evolutions h3 {
+  margin-top: 0;
+  font-size: 16px;
+}
+#evolutions ul {
+  list-style: none;
+  padding: 0;
+}
+#evolutions li {
+  margin: 5px 0;
+  padding: 4px 8px;
+  background: #222;
+  border-radius: 6px;
 }
