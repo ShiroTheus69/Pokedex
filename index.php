@@ -1,27 +1,69 @@
 <?php
+// Descobre o total de Pokémon disponíveis
 $countData = json_decode(file_get_contents("https://pokeapi.co/api/v2/pokemon?limit=1"), true);
 $total = $countData['count']; // Ex: 1025+
 
-$id = isset($_GET['id']) ? (int)$_GET['id'] : 1;
-if ($id < 1) $id = 1;
-if ($id > $total) $id = $total;
-
-// Filtros
+// Parâmetros da URL
 $typeFilter = $_GET['type'] ?? '';
 $generationFilter = $_GET['generation'] ?? '';
+$currentIndex = isset($_GET['index']) ? (int)$_GET['index'] : 0;
+$id = isset($_GET['id']) ? (int)$_GET['id'] : 1;
 
-// Dados principais
-$url = "https://pokeapi.co/api/v2/pokemon/$id";
+// Inicializa listas
+$pokemonList = [];
+$speciesList = [];
+$filteredList = [];
+$name = null;
+
+// Filtro por tipo
+if (!empty($typeFilter)) {
+  $typeUrl = "https://pokeapi.co/api/v2/type/$typeFilter";
+  $typeData = json_decode(file_get_contents($typeUrl), true);
+  $pokemonList = array_map(fn($p) => $p['pokemon']['name'], $typeData['pokemon']);
+}
+
+// Filtro por geração
+if (!empty($generationFilter)) {
+  $genUrl = "https://pokeapi.co/api/v2/generation/$generationFilter";
+  $genData = json_decode(file_get_contents($genUrl), true);
+  $speciesList = array_map(fn($s) => $s['name'], $genData['pokemon_species']);
+}
+
+// Aplica interseção se ambos os filtros estiverem ativos
+if (!empty($pokemonList) && !empty($speciesList)) {
+  $filteredList = array_values(array_intersect($pokemonList, $speciesList));
+} elseif (!empty($pokemonList)) {
+  $filteredList = $pokemonList;
+} elseif (!empty($speciesList)) {
+  $filteredList = $speciesList;
+}
+
+// Define o nome do Pokémon atual
+if (!empty($filteredList)) {
+  if ($currentIndex < 0) $currentIndex = 0;
+  if ($currentIndex >= count($filteredList)) $currentIndex = count($filteredList) - 1;
+  $name = $filteredList[$currentIndex];
+  $url = "https://pokeapi.co/api/v2/pokemon/$name";
+} else {
+  if ($id < 1) $id = 1;
+  if ($id > $total) $id = $total;
+  $url = "https://pokeapi.co/api/v2/pokemon/$id";
+}
+
+// Dados principais do Pokémon
 $data = json_decode(file_get_contents($url), true);
-
 $name = ucfirst($data['name']);
 $types = array_map(fn($t) => ucfirst($t['type']['name']), $data['types']);
 $image = $data['sprites']['other']['official-artwork']['front_default'];
 $height = $data['height'] / 10;
 $weight = $data['weight'] / 10;
 
-// Descrição
+// Número real do Pokémon
 $speciesUrl = $data['species']['url'];
+preg_match('/\/pokemon-species\/(\d+)\//', $speciesUrl, $matches);
+$pokemonNumber = $matches[1] ?? $id;
+
+// Descrição
 $species = json_decode(file_get_contents($speciesUrl), true);
 $flavor = "";
 foreach ($species['flavor_text_entries'] as $entry) {
@@ -44,6 +86,8 @@ function getEvolutions($chain) {
 }
 $evolutions = getEvolutions($evolutionData['chain']);
 ?>
+
+
 <!doctype html>
 <html lang="pt-br">
 <head>
@@ -65,19 +109,28 @@ $evolutions = getEvolutions($evolutionData['chain']);
       <img src="<?= $image ?>" alt="<?= $name ?>">
     </div>
     <div class="info">
-      <h2>#<?= str_pad($id,3,'0',STR_PAD_LEFT) ?> - <?= $name ?></h2>
+      <h2>#<?= str_pad($pokemonNumber, 3, '0', STR_PAD_LEFT) ?> - <?= $name ?></h2>
       <p><strong>Tipo:</strong> <?= implode(', ', $types) ?></p>
       <p><strong>Altura:</strong> <?= $height ?> m</p>
       <p><strong>Peso:</strong> <?= $weight ?> kg</p>
     </div>
     <div class="controls">
+    <?php if (!empty($filteredList)): ?>
+      <?php if ($currentIndex > 0): ?>
+        <a href="?index=<?= $currentIndex - 1 ?>&type=<?= urlencode($typeFilter) ?>&generation=<?= urlencode($generationFilter) ?>" class="btn">◀</a>
+      <?php endif; ?>
+      <?php if ($currentIndex < count($filteredList) - 1): ?>
+        <a href="?index=<?= $currentIndex + 1 ?>&type=<?= urlencode($typeFilter) ?>&generation=<?= urlencode($generationFilter) ?>" class="btn">▶</a>
+      <?php endif; ?>
+    <?php else: ?>
       <?php if ($id > 1): ?>
-        <a href="?id=<?= $id-1 ?>" class="btn">◀</a>
+        <a href="?id=<?= $id - 1 ?>" class="btn">◀</a>
       <?php endif; ?>
       <?php if ($id < $total): ?>
-        <a href="?id=<?= $id+1 ?>" class="btn">▶</a>
+        <a href="?id=<?= $id + 1 ?>" class="btn">▶</a>
       <?php endif; ?>
-    </div>
+    <?php endif; ?>
+  </div>
   </div>
   
   <!-- Parte direita -->
@@ -108,10 +161,9 @@ $evolutions = getEvolutions($evolutionData['chain']);
       <p><?= nl2br($flavor) ?></p>
     </div>
     <div class="buttons">
-      <button onclick="document.getElementById('cry').play()">🔊 Som</button>
-      <audio id="cry" src="sounds/<?= str_pad($id,3,'0',STR_PAD_LEFT) ?>.mp3"></audio>
-      
-      <button onclick="document.getElementById('evolutions').style.display='block'">🔁 Evoluções</button>
+      <button class="sound-btn">Som</button>
+
+      <button onclick="document.getElementById('evolutions').style.display='block'">Evoluções</button>
     </div>
     <div id="evolutions" style="display:none">
       <h3>Evoluções:</h3>
@@ -124,4 +176,18 @@ $evolutions = getEvolutions($evolutionData['chain']);
     </div>
   </div>
 </body>
+
+<script>
+  const pokemonName = "<?= strtolower($data['name']) ?>";
+  const audio = new Audio(`https://play.pokemonshowdown.com/audio/cries/${pokemonName}.ogg`);
+  
+  // Ao clicar em qualquer botão com classe .sound-btn, toca o som
+  document.querySelectorAll('.sound-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      audio.currentTime = 0;  // reinicia
+      audio.play();
+    });
+  });
+</script>
+
 </html>

@@ -2,12 +2,15 @@ body {
   margin: 0;
   font-family: Arial, sans-serif;
   color: #fff;
+  min-height: 100vh;
+  background-image: url("image/4840016244_7445a0f092_b.jpg");
+  background-size: cover;              /* Preenche toda a tela */
+  background-position: center center;  /* Centraliza a imagem */
+  background-repeat: no-repeat;
+  background-attachment: fixed;
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
-  background: linear-gradient(to bottom, #87ceeb 0%, #f0f8ff 40%, #98fb98 100%);
-  background-attachment: fixed;
 }
 
 .pokedex {
