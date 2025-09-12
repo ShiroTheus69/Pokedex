@@ -100,10 +100,12 @@ $evolutions = getEvolutions($evolutionData['chain']);
   <!-- Parte esquerda -->
   <div class="left">
     <div class="lights">
-      <span class="light blue"></span>
-      <span class="light red"></span>
-      <span class="light yellow"></span>
-      <span class="light green"></span>
+      <span class="light blue main-button"></span>
+      <div class="side-buttons">
+        <span class="light red"></span>
+        <span class="light yellow"></span>
+        <span class="light green"></span>
+      </div>
     </div>
     <div class="screen">
       <img src="<?= $image ?>" alt="<?= $name ?>">
@@ -140,9 +142,25 @@ $evolutions = getEvolutions($evolutionData['chain']);
         <label>Tipo:
           <select name="type">
             <option value="">Todos</option>
+            <option value="normal">Normal</option>
             <option value="fire">Fogo</option>
             <option value="water">Água</option>
             <option value="grass">Grama</option>
+            <option value="bug">Inseto</option>
+            <option value="poison">Veneno</option>
+            <option value="rock">Pedra</option>
+            <option value="ground">Terra</option>
+            <option value="flying">Voador</option>
+            <option value="electric">Elétrico</option>
+            <option value="fighting">Lutador</option>
+            <option value="dark">Sombrio</option>
+            <option value="ghost">Fantasma</option>
+            <option value="fairy">Fada</option>
+            <option value="psychic">Psíquico</option>
+            <option value="dragon">Dragão</option>
+            <option value="steel">Metal</option>
+            <option value="ice">Gelo</option>
+            <option value="dragon">Dragão</option>
           </select>
             <!-- Adicione mais tipos -->
         <label>Geração:
@@ -150,7 +168,13 @@ $evolutions = getEvolutions($evolutionData['chain']);
             <option value="">Todas</option>
             <option value="1">Gen 1</option>
             <option value="2">Gen 2</option>
-              <!-- Adicione mais gerações -->
+            <option value="3">Gen 3</option>
+            <option value="4">Gen 4</option>
+            <option value="5">Gen 5</option>
+            <option value="6">Gen 6</option>
+            <option value="7">Gen 7</option>
+            <option value="8">Gen 8</option>
+            <option value="9">Gen 9</option>
           </select>
           </label>
         </label>

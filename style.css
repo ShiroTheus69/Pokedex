@@ -43,20 +43,42 @@ body {
 }
 
 .lights {
-  display: flex;
-  gap: 10px;
+  position: relative;
+  width: 100%;
+  height: 60px;
   margin-bottom: 20px;
 }
-.light {
-  width: 25px;
-  height: 25px;
+
+/* Bola azul principal */
+.main-button {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 3px solid #111;
+  background: radial-gradient(circle at 30% 30%, #64b5f6, #2196f3);
+  box-shadow: 0 0 10px rgba(33, 150, 243, 0.6);
+}
+
+/* Bolinhas laterais */
+.side-buttons {
+  position: absolute;
+  top: 5px;
+  right: 0;
+  display: flex;
+  gap: 12px;
+}
+
+.side-buttons .light {
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   border: 2px solid #111;
+  box-shadow: inset 0 0 5px rgba(0,0,0,0.3);
 }
-.light.blue { background: #2196f3; }
-.light.red { background: #e53935; }
-.light.yellow { background: #fdd835; }
-.light.green { background: #43a047; }
+
 
 .screen {
   background: #111;
