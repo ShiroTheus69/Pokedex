@@ -1,0 +1,96 @@
+/* Mantém o fundo já definido no style.css da pokedex */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  color: #fff;
+  min-height: 100vh;
+  background-image: url("image/4840016244_7445a0f092_b.jpg");
+  background-size: cover;              /* Preenche toda a tela */
+  background-position: center center;  /* Centraliza a imagem */
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+/* Caixa de login */
+.login-container {
+  background: #d32f2f;
+  border: 5px solid #b71c1c;
+  border-radius: 20px;
+  padding: 30px 40px;
+  width: 350px;
+  text-align: center;
+  box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.6);
+  animation: flutuar 3s ease-in-out infinite;
+}
+
+/* Animação flutuar */
+@keyframes flutuar {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+.login-container h1 {
+  color: #fff;
+  margin-bottom: 25px;
+  font-size: 28px;
+  text-shadow: 2px 2px #000;
+}
+
+/* Inputs */
+.login-container input[type="text"],
+.login-container input[type="password"] {
+  width: 90%;
+  padding: 12px;
+  margin: 8px 0;
+  border-radius: 8px;
+  border: 2px solid #333;
+  font-size: 16px;
+  outline: none;
+  text-align: center;
+}
+
+.login-container input[type="text"]:focus,
+.login-container input[type="password"]:focus {
+  border-color: #ffeb3b;
+  box-shadow: 0 0 8px #ffeb3b;
+}
+
+/* Botão */
+.login-container button {
+  width: 95%;
+  padding: 12px;
+  background: #111;
+  color: #fff;
+  border: 2px solid #000;
+  border-radius: 10px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 15px;
+  transition: 0.3s;
+}
+
+.login-container button:hover {
+  background: #333;
+}
+
+/* Luzinhas estilo pokedex */
+.lights {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.lights .light {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid #111;
+}
+
+.light.red { background: #f44336; }
+.light.yellow { background: #ffeb3b; }
+.light.green { background: #4caf50; }

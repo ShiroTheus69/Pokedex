@@ -186,6 +186,7 @@ $evolutions = getEvolutions($evolutionData['chain']);
     </div>
     <div class="buttons">
       <button class="sound-btn">Som</button>
+<button onclick="location.href='favorite.php?id=<?= $pokemonNumber ?>&name=<?= $name ?>'">⭐ Favoritar</button>
 
       <button onclick="document.getElementById('evolutions').style.display='block'">Evoluções</button>
     </div>
