@@ -96,6 +96,7 @@ $evolutions = getEvolutions($evolutionData['chain']);
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <button id="changeBgBtn">Mudar Fundo</button>
 <div class="pokedex">
   <!-- Parte esquerda -->
   <div class="left">
@@ -200,6 +201,29 @@ $evolutions = getEvolutions($evolutionData['chain']);
       </div>
     </div>
   </div>
+<script>
+  const bgButton = document.getElementById("changeBgBtn");
+  const body = document.body;
+  const backgrounds = [
+    "image/4840016244_7445a0f092_b.jpg",
+    "image/novo_fundo.jpg"
+  ];
+
+  let currentBgIndex = localStorage.getItem("bgIndex") ? parseInt(localStorage.getItem("bgIndex")) : 0;
+
+  body.style.backgroundImage = `url('${backgrounds[currentBgIndex]}')`;
+  body.style.backgroundSize = "cover";
+  body.style.backgroundRepeat = "no-repeat";
+  body.style.backgroundPosition = "center center";
+
+  bgButton.addEventListener("click", () => {
+    currentBgIndex = (currentBgIndex + 1) % backgrounds.length;
+    body.style.backgroundImage = `url('${backgrounds[currentBgIndex]}')`;
+    localStorage.setItem("bgIndex", currentBgIndex);
+  });
+</script>
+
+
 </body>
 
 <script>
