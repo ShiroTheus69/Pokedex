@@ -1,20 +1,41 @@
 <?php
 session_start();
-include("db.php"); // conexão MySQL
+include("db.php");
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $user = $_POST['username'];
+    $user = trim($_POST['username']);
     $pass = $_POST['password'];
 
-    $query = $conn->prepare("SELECT * FROM users WHERE username=? AND password=?");
-    $query->bind_param("ss", $user, $pass);
-    $query->execute();
-    $result = $query->get_result();
+    $stmt = $conn->prepare("SELECT id, usuario, senha FROM usuarios WHERE usuario = ? LIMIT 1");
+    $stmt->bind_param("s", $user);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
-    if ($result->num_rows === 1) {
-        $_SESSION['user'] = $user;
-        header("Location: index.php");
-        exit;
+    if ($result && $result->num_rows === 1) {
+        $row = $result->fetch_assoc();
+        $stored = $row['senha'];
+
+        if (password_verify($pass, $stored)) {
+            $_SESSION['user'] = $row['usuario'];
+            $_SESSION['user_id'] = $row['id'];
+            header("Location: index.php");
+            exit;
+        } else {
+
+            if ($pass === $stored) {
+                $newHash = password_hash($pass, PASSWORD_DEFAULT);
+                $upd = $conn->prepare("UPDATE usuarios SET senha = ? WHERE id = ?");
+                $upd->bind_param("si", $newHash, $row['id']);
+                $upd->execute();
+
+                $_SESSION['user'] = $row['usuario'];
+                $_SESSION['user_id'] = $row['id'];
+                header("Location: index.php");
+                exit;
+            } else {
+                $error = "Usuário ou senha inválidos.";
+            }
+        }
     } else {
         $error = "Usuário ou senha inválidos.";
     }
@@ -22,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <title>Pokedex Login</title>
@@ -38,13 +59,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 
     <h1>Login Treinador</h1>
-    <form method="POST" action="login_process.php">
-      <input type="text" name="usuario" placeholder="Usuario" required>
-      <input type="password" name="senha" placeholder="Senha" required>
+
+    <?php if (!empty($error)) echo '<p style="color:red;">' . htmlspecialchars($error) . '</p>'; ?>
+
+    <form method="POST" action="login.php">
+      <input type="text" name="username" placeholder="Usuário" required>
+      <input type="password" name="password" placeholder="Senha" required>
       <button type="submit">Logar</button>
     </form>
+
+    <p>Ainda não tem conta? <a href="registro.php">Registre-se aqui</a></p>
   </div>
 
 </body>
 </html>
-

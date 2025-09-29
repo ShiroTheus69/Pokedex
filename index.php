@@ -1,7 +1,7 @@
 <?php
 // Descobre o total de Pokémon disponíveis
 $countData = json_decode(file_get_contents("https://pokeapi.co/api/v2/pokemon?limit=1"), true);
-$total = $countData['count']; // Ex: 1025+
+$total = $countData['count'];
 
 // Parâmetros da URL
 $typeFilter = $_GET['type'] ?? '';
