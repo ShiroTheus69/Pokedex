@@ -230,3 +230,97 @@ body {
   background: #222;
   border-radius: 6px;
 }
+
+.search-bar {
+  display: flex;
+  margin-bottom: 10px;
+}
+.search-bar input {
+  flex: 1;
+  padding: 5px;
+}
+.search-bar button {
+  padding: 5px 10px;
+}
+
+.evolution-line {
+  display: flex;
+  gap: 39px;
+  flex-wrap: wrap;
+}
+.evolution-item {
+  text-align: center;
+}
+
+/* Aba lateral fixa, visível sempre */
+.filter-tab {
+  position: fixed;
+  top: 140px;
+  left: calc(50% + 400px); /* colado à lateral da pokédex */
+  background-color: #880e0e;
+  color: white;
+  padding: 10px 16px;
+  font-weight: bold;
+  cursor: pointer;
+  z-index: 10;
+  border-radius: 0 5px 5px 0;
+  box-shadow: 0 0 8px rgba(0,0,0,0.4);
+}
+
+/* Painel oculto por padrão */
+.side-panel {
+  position: fixed;
+  top: 140px;
+  left: calc(50% + 400px);
+  width: 0;
+  max-height: 300px; /* até o botão de filtrar */
+  overflow: hidden;
+  background-color: #b71c1c;
+  border-left: 3px solid #880e0e;
+  box-shadow: -2px 0 10px rgba(0,0,0,0.4);
+  color: #fff;
+  font-size: 14px;
+  border-radius: 0 10px 10px 0;
+  transition: width 0.4s ease;
+  z-index: 5;
+}
+
+/* Quando aberto */
+.side-panel.open {
+  width: 280px;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+/* Botão de fechar */
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 18px;
+  color: #fff;
+  float: right;
+  cursor: pointer;
+}
+
+/* Filtros internos */
+.side-panel .filters form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.side-panel select,
+.side-panel button {
+  padding: 8px;
+  border-radius: 6px;
+  border: none;
+  font-size: 14px;
+}
+.side-panel button {
+  background: #111;
+  color: #fff;
+  cursor: pointer;
+}
+.side-panel button:hover {
+  background: #333;
+}
+

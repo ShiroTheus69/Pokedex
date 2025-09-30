@@ -15,6 +15,14 @@ $speciesList = [];
 $filteredList = [];
 $name = null;
 
+// Pesquisa Pokemon
+$searchInput = $_GET['search'] ?? '';
+  if (is_numeric($searchInput)) {
+    $id = (int)$searchInput;
+    $url = "https://pokeapi.co/api/v2/pokemon/$id";
+  }
+
+
 // Filtro por tipo
 if (!empty($typeFilter)) {
   $typeUrl = "https://pokeapi.co/api/v2/type/$typeFilter";
@@ -108,6 +116,12 @@ $evolutions = getEvolutions($evolutionData['chain']);
         <span class="light green"></span>
       </div>
     </div>
+
+    <form method="get" class="search-bar">
+      <input type="text" name="search" placeholder="Buscar por nome ou número..." required>
+      <button type="submit">🔍</button>
+    </form>
+
     <div class="screen">
       <img src="<?= $image ?>" alt="<?= $name ?>">
     </div>
@@ -138,66 +152,82 @@ $evolutions = getEvolutions($evolutionData['chain']);
   
   <!-- Parte direita -->
   <div class="right">
-    <div class="filters">
-      <form method="get">
-        <label>Tipo:
-          <select name="type">
-            <option value="">Todos</option>
-            <option value="normal">Normal</option>
-            <option value="fire">Fogo</option>
-            <option value="water">Água</option>
-            <option value="grass">Grama</option>
-            <option value="bug">Inseto</option>
-            <option value="poison">Veneno</option>
-            <option value="rock">Pedra</option>
-            <option value="ground">Terra</option>
-            <option value="flying">Voador</option>
-            <option value="electric">Elétrico</option>
-            <option value="fighting">Lutador</option>
-            <option value="dark">Sombrio</option>
-            <option value="ghost">Fantasma</option>
-            <option value="fairy">Fada</option>
-            <option value="psychic">Psíquico</option>
-            <option value="dragon">Dragão</option>
-            <option value="steel">Metal</option>
-            <option value="ice">Gelo</option>
-            <option value="dragon">Dragão</option>
-          </select>
-            <!-- Adicione mais tipos -->
-        <label>Geração:
-          <select name="generation">
-            <option value="">Todas</option>
-            <option value="1">Gen 1</option>
-            <option value="2">Gen 2</option>
-            <option value="3">Gen 3</option>
-            <option value="4">Gen 4</option>
-            <option value="5">Gen 5</option>
-            <option value="6">Gen 6</option>
-            <option value="7">Gen 7</option>
-            <option value="8">Gen 8</option>
-            <option value="9">Gen 9</option>
-          </select>
+
+    <!-- Botão lateral fixo -->
+    <div class="filter-tab" onclick="toggleSidePanel()">Filtros</div>
+
+    <!-- Painel de filtros oculto -->
+    <div class="side-panel" id="sidePanel">
+      <button class="close-btn" onclick="toggleSidePanel()">✖</button>
+      <div class="filters">
+        <form method="get">
+          <label>Tipo:
+            <select name="type">
+              <option value="">Todos</option>
+              <option value="normal">Normal</option>
+              <option value="fire">Fogo</option>
+              <option value="water">Água</option>
+              <option value="grass">Grama</option>
+              <option value="bug">Inseto</option>
+              <option value="poison">Veneno</option>
+              <option value="rock">Pedra</option>
+              <option value="ground">Terra</option>
+              <option value="flying">Voador</option>
+              <option value="electric">Elétrico</option>
+              <option value="fighting">Lutador</option>
+              <option value="dark">Sombrio</option>
+              <option value="ghost">Fantasma</option>
+              <option value="fairy">Fada</option>
+              <option value="psychic">Psíquico</option>
+              <option value="dragon">Dragão</option>
+              <option value="steel">Metal</option>
+              <option value="ice">Gelo</option>
+            </select>
           </label>
-        </label>
-        <button type="submit">Filtrar</button>
-      </form>
+
+          <label>Geração:
+            <select name="generation">
+              <option value="">Todas</option>
+              <option value="1">Gen 1</option>
+              <option value="2">Gen 2</option>
+              <option value="3">Gen 3</option>
+              <option value="4">Gen 4</option>
+              <option value="5">Gen 5</option>
+              <option value="6">Gen 6</option>
+              <option value="7">Gen 7</option>
+              <option value="8">Gen 8</option>
+              <option value="9">Gen 9</option>
+            </select>
+          </label>
+
+          <button type="submit">Filtrar</button>
+        </form>
+      </div>
     </div>
+
     <div class="desc-screen">
       <p><?= nl2br($flavor) ?></p>
     </div>
     <div class="buttons">
       <button class="sound-btn">Som</button>
-<button onclick="location.href='favorite.php?id=<?= $pokemonNumber ?>&name=<?= $name ?>'">⭐ Favoritar</button>
+
+        <button onclick="location.href='favorite.php?id=<?= $pokemonNumber ?>&name=<?= $name ?>'">⭐ Favoritar</button>
 
       <button onclick="document.getElementById('evolutions').style.display='block'">Evoluções</button>
     </div>
-    <div id="evolutions" style="display:none">
-      <h3>Evoluções:</h3>
-      <ul>
-        <?php foreach ($evolutions as $evo): ?>
-          <li><?= $evo ?></li>
+      <div id="evolutions" style="display:block">
+        <h3>Evoluções:</h3>
+        <div class="evolution-line">
+          <?php foreach ($evolutions as $evo): 
+            $evoData = json_decode(file_get_contents("https://pokeapi.co/api/v2/pokemon/" . strtolower($evo)), true);
+            $evoImage = $evoData['sprites']['other']['official-artwork']['front_default'];
+          ?>
+            <div class="evolution-item">
+              <img src="<?= $evoImage ?>" alt="<?= $evo ?>" style="width:80px">
+              <p><?= $evo ?></p>
+            </div>
           <?php endforeach; ?>
-        </ul>
+        </div>
       </div>
     </div>
   </div>
@@ -223,6 +253,12 @@ $evolutions = getEvolutions($evolutionData['chain']);
   });
 </script>
 
+<script>
+function toggleSidePanel() {
+  const panel = document.getElementById("sidePanel");
+  panel.classList.toggle("open");
+}
+</script>
 
 </body>
 
