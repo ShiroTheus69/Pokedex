@@ -2,6 +2,15 @@
 session_start();
 include("db.php");
 
+// 🔹 Garantir que a tabela existe (mesmo truque do registro.php)
+$sql = "CREATE TABLE IF NOT EXISTS usuarios (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    usuario VARCHAR(100) NOT NULL UNIQUE,
+    senha VARCHAR(255) NOT NULL,
+    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)";
+$conn->query($sql);
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user = trim($_POST['username']);
     $pass = $_POST['password'];
@@ -15,33 +24,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $row = $result->fetch_assoc();
         $stored = $row['senha'];
 
+        // Verifica senha com hash
         if (password_verify($pass, $stored)) {
             $_SESSION['user'] = $row['usuario'];
             $_SESSION['user_id'] = $row['id'];
             header("Location: index.php");
             exit;
         } else {
-
-            if ($pass === $stored) {
-                $newHash = password_hash($pass, PASSWORD_DEFAULT);
-                $upd = $conn->prepare("UPDATE usuarios SET senha = ? WHERE id = ?");
-                $upd->bind_param("si", $newHash, $row['id']);
-                $upd->execute();
-
-                $_SESSION['user'] = $row['usuario'];
-                $_SESSION['user_id'] = $row['id'];
-                header("Location: index.php");
-                exit;
-            } else {
-                $error = "Usuário ou senha inválidos.";
-            }
+            $error = "Usuário ou senha inválidos.";
         }
     } else {
         $error = "Usuário ou senha inválidos.";
     }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
