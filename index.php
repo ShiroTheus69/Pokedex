@@ -150,10 +150,8 @@ $evolutions = getEvolutions($evolutionData['chain']);
   </div>
   </div>
   
-  <!-- Parte direita -->
   <div class="right">
 
-    <!-- Botão lateral fixo -->
     <div class="filter-tab" onclick="toggleSidePanel()">Filtros</div>
 
     <!-- Painel de filtros oculto -->
@@ -209,11 +207,10 @@ $evolutions = getEvolutions($evolutionData['chain']);
       <p><?= nl2br($flavor) ?></p>
     </div>
     <div class="buttons">
+
       <button class="sound-btn">Som</button>
+      <button onclick="location.href='favorite.php?id=<?= $pokemonNumber ?>&name=<?= $name ?>'">⭐ Favoritar</button>
 
-        <button onclick="location.href='favorite.php?id=<?= $pokemonNumber ?>&name=<?= $name ?>'">⭐ Favoritar</button>
-
-      <button onclick="document.getElementById('evolutions').style.display='block'">Evoluções</button>
     </div>
       <div id="evolutions" style="display:block">
         <h3>Evoluções:</h3>
