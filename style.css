@@ -12,11 +12,12 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  transition: background-image 0.4s ease-in-out; /* Suaviza a troca */
+  transition: background-image 0.4s ease-in-out;
 }
 
-/* Botão de troca de fundo (novo) */
-#changeBgBtn {
+/* Botão de troca de fundo */
+#changeBgBtn,
+#toggleAnimation {
   position: fixed;
   top: 20px;
   right: 20px;
@@ -31,11 +32,15 @@ body {
   box-shadow: 0 0 10px rgba(0,0,0,0.5);
   transition: background-color 0.3s;
 }
-#changeBgBtn:hover {
+#toggleAnimation {
+  right: 160px;
+}
+#changeBgBtn:hover,
+#toggleAnimation:hover {
   background-color: rgba(0, 0, 0, 0.9);
 }
 
-
+/* Pokédex principal */
 .pokedex {
   width: 800px;
   max-width: 95%;
@@ -47,6 +52,7 @@ body {
   flex-wrap: wrap;
   box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.6);
   animation: flutuar 3s ease-in-out infinite;
+  animation-play-state: running;
 }
 
 @keyframes flutuar {
@@ -102,7 +108,7 @@ body {
   box-shadow: inset 0 0 5px rgba(0,0,0,0.3);
 }
 
-
+/* Tela */
 .screen {
   background: #111;
   border: 5px solid #333;
@@ -252,11 +258,11 @@ body {
   text-align: center;
 }
 
-/* Aba lateral fixa, visível sempre */
+/* Aba lateral fixa */
 .filter-tab {
   position: fixed;
   top: 140px;
-  left: calc(50% + 400px); /* colado à lateral da pokédex */
+  left: calc(50% + 400px);
   background-color: #880e0e;
   color: white;
   padding: 10px 16px;
@@ -267,13 +273,13 @@ body {
   box-shadow: 0 0 8px rgba(0,0,0,0.4);
 }
 
-/* Painel oculto por padrão */
+/* Painel lateral */
 .side-panel {
   position: fixed;
   top: 140px;
   left: calc(50% + 400px);
   width: 0;
-  max-height: 300px; /* até o botão de filtrar */
+  max-height: 300px;
   overflow: hidden;
   background-color: #b71c1c;
   border-left: 3px solid #880e0e;
@@ -284,15 +290,11 @@ body {
   transition: width 0.4s ease;
   z-index: 5;
 }
-
-/* Quando aberto */
 .side-panel.open {
   width: 280px;
   padding: 20px;
   overflow-y: auto;
 }
-
-/* Botão de fechar */
 .close-btn {
   background: none;
   border: none;
@@ -301,8 +303,6 @@ body {
   float: right;
   cursor: pointer;
 }
-
-/* Filtros internos */
 .side-panel .filters form {
   display: flex;
   flex-direction: column;
@@ -323,4 +323,3 @@ body {
 .side-panel button:hover {
   background: #333;
 }
-

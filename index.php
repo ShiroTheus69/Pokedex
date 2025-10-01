@@ -17,45 +17,44 @@ $name = null;
 
 // Pesquisa Pokemon
 $searchInput = $_GET['search'] ?? '';
-  if (is_numeric($searchInput)) {
+if (is_numeric($searchInput)) {
     $id = (int)$searchInput;
     $url = "https://pokeapi.co/api/v2/pokemon/$id";
-  }
-
+}
 
 // Filtro por tipo
 if (!empty($typeFilter)) {
-  $typeUrl = "https://pokeapi.co/api/v2/type/$typeFilter";
-  $typeData = json_decode(file_get_contents($typeUrl), true);
-  $pokemonList = array_map(fn($p) => $p['pokemon']['name'], $typeData['pokemon']);
+    $typeUrl = "https://pokeapi.co/api/v2/type/$typeFilter";
+    $typeData = json_decode(file_get_contents($typeUrl), true);
+    $pokemonList = array_map(fn($p) => $p['pokemon']['name'], $typeData['pokemon']);
 }
 
 // Filtro por geração
 if (!empty($generationFilter)) {
-  $genUrl = "https://pokeapi.co/api/v2/generation/$generationFilter";
-  $genData = json_decode(file_get_contents($genUrl), true);
-  $speciesList = array_map(fn($s) => $s['name'], $genData['pokemon_species']);
+    $genUrl = "https://pokeapi.co/api/v2/generation/$generationFilter";
+    $genData = json_decode(file_get_contents($genUrl), true);
+    $speciesList = array_map(fn($s) => $s['name'], $genData['pokemon_species']);
 }
 
 // Aplica interseção se ambos os filtros estiverem ativos
 if (!empty($pokemonList) && !empty($speciesList)) {
-  $filteredList = array_values(array_intersect($pokemonList, $speciesList));
+    $filteredList = array_values(array_intersect($pokemonList, $speciesList));
 } elseif (!empty($pokemonList)) {
-  $filteredList = $pokemonList;
+    $filteredList = $pokemonList;
 } elseif (!empty($speciesList)) {
-  $filteredList = $speciesList;
+    $filteredList = $speciesList;
 }
 
 // Define o nome do Pokémon atual
 if (!empty($filteredList)) {
-  if ($currentIndex < 0) $currentIndex = 0;
-  if ($currentIndex >= count($filteredList)) $currentIndex = count($filteredList) - 1;
-  $name = $filteredList[$currentIndex];
-  $url = "https://pokeapi.co/api/v2/pokemon/$name";
+    if ($currentIndex < 0) $currentIndex = 0;
+    if ($currentIndex >= count($filteredList)) $currentIndex = count($filteredList) - 1;
+    $name = $filteredList[$currentIndex];
+    $url = "https://pokeapi.co/api/v2/pokemon/$name";
 } else {
-  if ($id < 1) $id = 1;
-  if ($id > $total) $id = $total;
-  $url = "https://pokeapi.co/api/v2/pokemon/$id";
+    if ($id < 1) $id = 1;
+    if ($id > $total) $id = $total;
+    $url = "https://pokeapi.co/api/v2/pokemon/$id";
 }
 
 // Dados principais do Pokémon
@@ -84,7 +83,6 @@ foreach ($species['flavor_text_entries'] as $entry) {
 // Evoluções
 $evolutionUrl = $species['evolution_chain']['url'];
 $evolutionData = json_decode(file_get_contents($evolutionUrl), true);
-$evolutions = [];
 function getEvolutions($chain) {
     $evolutions = [ucfirst($chain['species']['name'])];
     foreach ($chain['evolves_to'] as $evo) {
@@ -95,7 +93,6 @@ function getEvolutions($chain) {
 $evolutions = getEvolutions($evolutionData['chain']);
 ?>
 
-
 <!doctype html>
 <html lang="pt-br">
 <head>
@@ -105,6 +102,8 @@ $evolutions = getEvolutions($evolutionData['chain']);
 </head>
 <body>
   <button id="changeBgBtn">Mudar Fundo</button>
+  <button id="toggleAnimation">Parar/Continuar Animação</button>
+
 <div class="pokedex">
   <!-- Parte esquerda -->
   <div class="left">
@@ -207,69 +206,82 @@ $evolutions = getEvolutions($evolutionData['chain']);
       <p><?= nl2br($flavor) ?></p>
     </div>
     <div class="buttons">
-
       <button class="sound-btn">Som</button>
       <button onclick="location.href='favorite.php?id=<?= $pokemonNumber ?>&name=<?= $name ?>'">⭐ Favoritar</button>
-
     </div>
-      <div id="evolutions" style="display:block">
-        <h3>Evoluções:</h3>
-        <div class="evolution-line">
-          <?php foreach ($evolutions as $evo): 
-            $evoData = json_decode(file_get_contents("https://pokeapi.co/api/v2/pokemon/" . strtolower($evo)), true);
-            $evoImage = $evoData['sprites']['other']['official-artwork']['front_default'];
-          ?>
-            <div class="evolution-item">
-              <img src="<?= $evoImage ?>" alt="<?= $evo ?>" style="width:80px">
-              <p><?= $evo ?></p>
-            </div>
-          <?php endforeach; ?>
-        </div>
+
+    <div id="evolutions" style="display:block">
+      <h3>Evoluções:</h3>
+      <div class="evolution-line">
+        <?php foreach ($evolutions as $evo): 
+          $evoData = json_decode(file_get_contents("https://pokeapi.co/api/v2/pokemon/" . strtolower($evo)), true);
+          $evoImage = $evoData['sprites']['other']['official-artwork']['front_default'];
+        ?>
+          <div class="evolution-item">
+            <img src="<?= $evoImage ?>" alt="<?= $evo ?>" style="width:80px">
+            <p><?= $evo ?></p>
+          </div>
+        <?php endforeach; ?>
       </div>
     </div>
   </div>
+</div>
+
 <script>
+  // Troca de fundo
   const bgButton = document.getElementById("changeBgBtn");
   const body = document.body;
   const backgrounds = [
     "image/4840016244_7445a0f092_b.jpg",
     "image/novo_fundo.jpg"
   ];
-
   let currentBgIndex = localStorage.getItem("bgIndex") ? parseInt(localStorage.getItem("bgIndex")) : 0;
-
   body.style.backgroundImage = `url('${backgrounds[currentBgIndex]}')`;
   body.style.backgroundSize = "cover";
   body.style.backgroundRepeat = "no-repeat";
   body.style.backgroundPosition = "center center";
-
   bgButton.addEventListener("click", () => {
     currentBgIndex = (currentBgIndex + 1) % backgrounds.length;
     body.style.backgroundImage = `url('${backgrounds[currentBgIndex]}')`;
     localStorage.setItem("bgIndex", currentBgIndex);
   });
-</script>
 
-<script>
-function toggleSidePanel() {
-  const panel = document.getElementById("sidePanel");
-  panel.classList.toggle("open");
-}
-</script>
+  // Painel de filtros
+  function toggleSidePanel() {
+    const panel = document.getElementById("sidePanel");
+    panel.classList.toggle("open");
+  }
 
-</body>
-
-<script>
+  // Som do Pokémon
   const pokemonName = "<?= strtolower($data['name']) ?>";
   const audio = new Audio(`https://play.pokemonshowdown.com/audio/cries/${pokemonName}.ogg`);
-  
-  // Ao clicar em qualquer botão com classe .sound-btn, toca o som
   document.querySelectorAll('.sound-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-      audio.currentTime = 0;  // reinicia
+      audio.currentTime = 0;
       audio.play();
     });
   });
-</script>
 
+  // Controle da animação
+  const pokedex = document.querySelector('.pokedex');
+  const toggleAnimBtn = document.getElementById('toggleAnimation');
+  let animState = localStorage.getItem('pokedexAnimation') || 'running';
+  pokedex.style.animationPlayState = animState;
+
+  toggleAnimBtn.addEventListener('click', () => {
+    if (pokedex.style.animationPlayState === 'running') {
+      pokedex.style.animationPlayState = 'paused';
+      localStorage.setItem('pokedexAnimation', 'paused');
+    } else {
+      pokedex.style.animationPlayState = 'running';
+      localStorage.setItem('pokedexAnimation', 'running');
+    }
+  });
+
+  window.addEventListener('DOMContentLoaded', () => {
+    const savedState = localStorage.getItem('pokedexAnimation');
+    if (savedState) pokedex.style.animationPlayState = savedState;
+  });
+</script>
+</body>
 </html>
