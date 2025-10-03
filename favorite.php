@@ -2,31 +2,30 @@
 session_start();
 include("db.php");
 
-if (!isset($_SESSION['user'])) {
+// Verifica se o usuário está logado
+if (!isset($_SESSION['usuario_id'])) {
     header("Location: login.php");
     exit;
 }
 
-$user = $_SESSION['user'];
-$pokemon_id = $_GET['id'];
-$pokemon_name = $_GET['name'];
+$usuario_id = $_SESSION['usuario_id'];
+$pokemon_nome = $_GET['name'] ?? null;
 
-// Verifica se já é favorito
-$check = $conn->prepare("SELECT * FROM favorites WHERE user=? AND pokemon_id=?");
-$check->bind_param("si", $user, $pokemon_id);
-$check->execute();
-$res = $check->get_result();
+if ($pokemon_nome) {
+    // Verifica se já está favoritado
+    $check = $conn->prepare("SELECT id FROM favoritos WHERE usuario_id = ? AND pokemon_nome = ?");
+    $check->bind_param("is", $usuario_id, $pokemon_nome);
+    $check->execute();
+    $checkResult = $check->get_result();
 
-if ($res->num_rows > 0) {
-    // Remove favorito
-    $delete = $conn->prepare("DELETE FROM favorites WHERE user=? AND pokemon_id=?");
-    $delete->bind_param("si", $user, $pokemon_id);
-    $delete->execute();
-} else {
-    // Adiciona favorito
-    $insert = $conn->prepare("INSERT INTO favorites (user, pokemon_id, pokemon_name) VALUES (?,?,?)");
-    $insert->bind_param("sis", $user, $pokemon_id, $pokemon_name);
-    $insert->execute();
+    if ($checkResult->num_rows === 0) {
+        // Insere como favorito
+        $stmt = $conn->prepare("INSERT INTO favoritos (usuario_id, pokemon_nome) VALUES (?, ?)");
+        $stmt->bind_param("is", $usuario_id, $pokemon_nome);
+        $stmt->execute();
+    }
 }
 
-header("Location: index.php?id=$pokemon_id");
+// Redireciona de volta para a página principal
+header("Location: index.php");
+exit;

@@ -26,8 +26,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Verifica senha com hash
         if (password_verify($pass, $stored)) {
-            $_SESSION['user'] = $row['usuario'];
-            $_SESSION['user_id'] = $row['id'];
+            $_SESSION['usuario_nome'] = $row['usuario'];
+            $_SESSION['usuario_id'] = $row['id'];
             header("Location: index.php");
             exit;
         } else {
@@ -38,6 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>

@@ -1,6 +1,7 @@
 <?php
 session_start();
 include("db.php"); // conexão MySQL
+
 $sql = "CREATE TABLE IF NOT EXISTS usuarios (
     id INT AUTO_INCREMENT PRIMARY KEY,
     usuario VARCHAR(100) NOT NULL UNIQUE,
