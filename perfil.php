@@ -8,9 +8,9 @@ if (!isset($_SESSION['usuario_id']) || !isset($_SESSION['usuario_nome'])) {
     exit;
 }
 
-$usuario_id = $_SESSION['user_id'];
-$name = $_SESSION['user'];
-$image = "image/hilda.jpg"; // Substitua por imagem real se quiser
+$usuario_id = $_SESSION['usuario_id'];
+$name = $_SESSION['usuario_nome'];
+$image = "image/hilda.jpg";
 
 // Buscar Pokémon favoritados
 $favoritos = [];
