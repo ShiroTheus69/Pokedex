@@ -99,6 +99,14 @@ function getEvolutions($chain)
   return $evolutions;
 }
 $evolutions = getEvolutions($evolutionData['chain']);
+
+if (isset($_SESSION['usuario_nome'])) {
+  // Usuário está logado
+  echo '<a href="logout.php"><button id="logout">Deslogar</button></a>';
+} else {
+  // Usuário não está logado
+  echo '<a href="login.php"><button id="login">Logar</button></a>';
+}
 ?>
 
 <!doctype html>
@@ -114,6 +122,7 @@ $evolutions = getEvolutions($evolutionData['chain']);
   <button id="changeBgBtn">Mudar Fundo</button>
   <button id="toggleAnimation">Parar/Continuar Animação</button>
   <a href="perfil.php"><button id="perfil">Ir para o Perfil</button></a>
+
 
   <div class="pokedex">
     <!-- Parte esquerda -->
