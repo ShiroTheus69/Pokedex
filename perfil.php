@@ -11,7 +11,10 @@ if (!isset($_SESSION['usuario_id']) || !isset($_SESSION['usuario_nome'])) {
 $usuario_id = $_SESSION['usuario_id'];
 $name = $_SESSION['usuario_nome'];
 
-// Busca imagem personalizada, se existir
+// Caminho padrão
+$defaultImage = "image/hilda.jpg";
+
+// Busca imagem personalizada no banco
 $sql = "SELECT imagem_perfil FROM usuarios WHERE id = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $usuario_id);
@@ -19,13 +22,15 @@ $stmt->execute();
 $result = $stmt->get_result();
 $row = $result->fetch_assoc();
 
+// Se existe imagem personalizada e arquivo existe -> usa ela, senão usa padrão
 if (!empty($row['imagem_perfil']) && file_exists($row['imagem_perfil'])) {
-    $image = $row['imagem_perfil'];
+    // append timestamp pra evitar cache do navegador após upload
+    $image = $row['imagem_perfil'] . "?v=" . filemtime($row['imagem_perfil']);
 } else {
-    $image = "image/hilda.jpg"; // imagem padrão
+    $image = $defaultImage;
 }
 
-// Buscar Pokémon favoritados
+// Buscar Pokémon favoritados (mantive sua lógica)
 $favoritos = [];
 $sql = "SELECT pokemon_nome FROM favoritos WHERE usuario_id = ?";
 $stmt = $conn->prepare($sql);
@@ -33,11 +38,10 @@ $stmt->bind_param("i", $usuario_id);
 $stmt->execute();
 $result = $stmt->get_result();
 
-while ($row = $result->fetch_assoc()) {
-    $favoritos[] = $row['pokemon_nome'];
+while ($r = $result->fetch_assoc()) {
+    $favoritos[] = $r['pokemon_nome'];
 }
 ?>
-
 <!doctype html>
 <html lang="pt-br">
 
@@ -46,97 +50,80 @@ while ($row = $result->fetch_assoc()) {
     <title>Pokédex - <?= htmlspecialchars($name) ?></title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* === Estilo da imagem de perfil === */
+        /* estilos mínimos e harmonizados (botões e enquadramento retangular) */
         .screen {
-            width: 180px;
-            height: 180px;
-            overflow: hidden;
-            border-radius: 12px;
-            border: 3px solid #d62828;
-            background-color: #000;
+            width: 220px;
+            height: auto;
+            padding: 8px;
+            border-radius: 8px;
+            background: #f6f6f8;
+            border: 2px solid #dcdcdc;
             display: flex;
             justify-content: center;
             align-items: center;
-            margin: 0 auto;
-            box-shadow: 0 0 12px rgba(0, 0, 0, 0.4);
+            margin: 0 auto 8px auto;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.08);
         }
-
         .screen img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            object-position: center;
-        }
-
-        /* === Upload abaixo da imagem === */
-        .upload-area {
-            text-align: center;
-            margin-top: 12px;
-        }
-
-        .upload-area label {
+            max-width: 100%;
+            height: auto;
             display: block;
-            margin-bottom: 6px;
-            font-weight: bold;
-            color: #fff;
-            text-shadow: 1px 1px 2px #000;
+            object-fit: contain;
+            border-radius: 4px; /* leve arredondamento, mantém formato retangular */
         }
 
-        .upload-area input[type="file"] {
+        .upload-container {
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        /* esconder input file real e estilizar label como botão */
+        .file-input {
             display: none;
         }
 
-        /* Botão estilizado */
-        .upload-btn {
+        .btn {
             display: inline-block;
-            background-color: #ffcb05;
-            color: #2a75bb;
-            font-weight: bold;
-            border: none;
             padding: 8px 14px;
-            border-radius: 8px;
+            border-radius: 10px;
+            font-weight: 700;
             cursor: pointer;
-            transition: 0.3s;
-            font-size: 14px;
+            border: none;
+            transition: transform .12s ease, box-shadow .12s ease;
         }
 
-        .upload-btn:hover {
-            background-color: #f8b700;
-            transform: scale(1.05);
-        }
-
-        .submit-btn {
-            display: inline-block;
-            background-color: #2a75bb;
+        .btn-primary {
+            background: linear-gradient(180deg,#2a75bb,#1b4f7a);
             color: #fff;
-            font-weight: bold;
-            border: none;
-            padding: 8px 14px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: 0.3s;
+            box-shadow: 0 6px 12px rgba(42,117,187,0.18);
+        }
+        .btn-primary:hover { transform: translateY(-2px); }
+
+        .btn-accent {
+            background: linear-gradient(180deg,#ffcb05,#f2a900);
+            color: #08306b;
+            box-shadow: 0 6px 12px rgba(255,203,5,0.12);
             margin-left: 8px;
-            font-size: 14px;
+        }
+        .btn-accent:hover { transform: translateY(-2px); }
+
+        /* label que funciona como botão para escolher arquivo */
+        label.file-label {
+            cursor: pointer;
+            display: inline-block;
         }
 
-        .submit-btn:hover {
-            background-color: #1d5e9b;
-            transform: scale(1.05);
+        /* pequena pré-visualização quando escolher (mobile friendly) */
+        #preview {
+            display: none;
+            margin-top: 8px;
+            max-width: 220px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
         }
 
-        /* === Geral === */
-        body {
-            background-size: cover;
-            background-repeat: no-repeat;
-            background-position: center center;
-        }
-
-        .info {
-            text-align: center;
-            margin-top: 10px;
-            color: #fff;
-            text-shadow: 1px 1px 3px #000;
-        }
+        /* manter seu layout existente, só melhorei os controles */
+        .info { text-align: center; margin-top: 10px; }
     </style>
 </head>
 
@@ -156,18 +143,18 @@ while ($row = $result->fetch_assoc()) {
                 </div>
             </div>
 
-            <!-- Imagem de perfil -->
+            <!-- tela com imagem (mantive posição e estrutura) -->
             <div class="screen">
-                <img src="<?= htmlspecialchars($image) ?>" alt="Imagem do usuário">
+                <img id="userImage" src="<?= htmlspecialchars($image) ?>" alt="Imagem do usuário">
             </div>
 
-            <!-- Formulário abaixo da imagem -->
-            <div class="upload-area">
+            <!-- FORMULÁRIO DE UPLOAD ABAIXO DA IMAGEM (preservei fluxo: action para upload_imagem.php) -->
+            <div class="upload-container">
                 <form id="uploadForm" action="upload_imagem.php" method="post" enctype="multipart/form-data">
-                    <label for="nova_imagem">Alterar imagem de perfil:</label>
-                    <label class="upload-btn" for="nova_imagem">Escolher imagem</label>
-                    <input type="file" name="nova_imagem" id="nova_imagem" accept="image/*" required>
-                    <button type="submit" class="submit-btn">Enviar</button>
+                    <label for="nova_imagem" class="file-label btn btn-accent">Escolher imagem</label>
+                    <input class="file-input" type="file" name="nova_imagem" id="nova_imagem" accept="image/*" onchange="handleFileChange(event)">
+                    <button type="submit" class="btn btn-primary">Enviar</button>
+                    <img id="preview" alt="Pré-visualização">
                 </form>
             </div>
 
@@ -183,7 +170,7 @@ while ($row = $result->fetch_assoc()) {
             <div class="side-panel" id="sidePanel">
                 <button class="close-btn" onclick="toggleSidePanel()">✖</button>
                 <div class="filters">
-                    <!-- Filtros de tipo e geração -->
+                    <!-- Filtros de tipo e geração (mantidos) -->
                     <form method="get">
                         <label>Tipo:
                             <select name="type">
@@ -257,7 +244,20 @@ while ($row = $result->fetch_assoc()) {
     </div>
 
     <script>
-        // Troca de fundo
+        // pré-visualização local antes do upload e update visual (não persiste até o upload)
+        function handleFileChange(e) {
+            const file = e.target.files[0];
+            const preview = document.getElementById('preview');
+            if (!file) {
+                preview.style.display = 'none';
+                return;
+            }
+            preview.src = URL.createObjectURL(file);
+            preview.style.display = 'block';
+            preview.onload = () => URL.revokeObjectURL(preview.src);
+        }
+
+        // Troca de fundo (mantive seu script)
         const bgButton = document.getElementById("changeBgBtn");
         const body = document.body;
         const backgrounds = [
@@ -266,6 +266,9 @@ while ($row = $result->fetch_assoc()) {
         ];
         let currentBgIndex = localStorage.getItem("bgIndex") ? parseInt(localStorage.getItem("bgIndex")) : 0;
         body.style.backgroundImage = `url('${backgrounds[currentBgIndex]}')`;
+        body.style.backgroundSize = "cover";
+        body.style.backgroundRepeat = "no-repeat";
+        body.style.backgroundPosition = "center center";
         bgButton.addEventListener("click", () => {
             currentBgIndex = (currentBgIndex + 1) % backgrounds.length;
             body.style.backgroundImage = `url('${backgrounds[currentBgIndex]}')`;
@@ -282,7 +285,7 @@ while ($row = $result->fetch_assoc()) {
         const pokedex = document.querySelector('.pokedex');
         const toggleAnimBtn = document.getElementById('toggleAnimation');
         let animState = localStorage.getItem('pokedexAnimation') || 'running';
-        pokedex.style.animationPlayState = animState;
+        if (pokedex) pokedex.style.animationPlayState = animState;
 
         toggleAnimBtn.addEventListener('click', () => {
             if (pokedex.style.animationPlayState === 'running') {
