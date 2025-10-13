@@ -370,3 +370,18 @@ body {
   position: relative;
   z-index: 1;
 }
+
+.light.red {
+  background: radial-gradient(circle at 30% 30%, #ff5b5b, #b00000);
+  box-shadow: 0 0 10px #ff5b5b, inset 0 0 5px #700000;
+}
+
+.light.yellow {
+  background: radial-gradient(circle at 30% 30%, #ffe66d, #bfa100);
+  box-shadow: 0 0 10px #ffe66d, inset 0 0 5px #7a6700;
+}
+
+.light.green {
+  background: radial-gradient(circle at 30% 30%, #8aff8a, #00a000);
+  box-shadow: 0 0 10px #8aff8a, inset 0 0 5px #006600;
+}

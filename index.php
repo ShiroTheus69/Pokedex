@@ -20,9 +20,27 @@ $name = null;
 
 // Pesquisa Pokemon
 $searchInput = $_GET['search'] ?? '';
-if (is_numeric($searchInput)) {
-  $id = (int) $searchInput;
-  $url = "https://pokeapi.co/api/v2/pokemon/$id";
+if (!empty($searchInput)) {
+  $nameInput = strtolower(trim($searchInput));
+
+  // Detecta se é número ou nome
+  if (is_numeric($nameInput)) {
+    $id = (int) $nameInput;
+    $url = "https://pokeapi.co/api/v2/pokemon/$id";
+  } else {
+    // Tenta buscar pelo nome
+    $url = "https://pokeapi.co/api/v2/pokemon/$nameInput";
+  }
+
+  // Verifica se o Pokémon existe
+  $response = @file_get_contents($url);
+  if ($response === false) {
+    // Se não existir, volta pro primeiro Pokémon
+    $url = "https://pokeapi.co/api/v2/pokemon/1";
+  } else {
+    $data = json_decode($response, true);
+    $id = $data['id'];
+  }
 }
 
 // Filtro por tipo
