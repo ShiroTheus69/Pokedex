@@ -12,3 +12,7 @@ CREATE TABLE usuarios (
     id INT AUTO_INCREMENT PRIMARY KEY,     
     usuario VARCHAR(50) NOT NULL UNIQUE,     
     senha VARCHAR(255) NOT NULL );
+
+    ALTER TABLE usuarios ADD COLUMN imagem_perfil VARCHAR(255) NULL AFTER senha;
+
+ 
