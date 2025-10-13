@@ -10,7 +10,20 @@ if (!isset($_SESSION['usuario_id']) || !isset($_SESSION['usuario_nome'])) {
 
 $usuario_id = $_SESSION['usuario_id'];
 $name = $_SESSION['usuario_nome'];
-$image = "image/hilda.jpg";
+
+// Busca imagem personalizada, se existir
+$sql = "SELECT imagem_perfil FROM usuarios WHERE id = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $usuario_id);
+$stmt->execute();
+$result = $stmt->get_result();
+$row = $result->fetch_assoc();
+
+if (!empty($row['imagem_perfil']) && file_exists($row['imagem_perfil'])) {
+    $image = $row['imagem_perfil'];
+} else {
+    $image = "image/hilda.jpg"; // imagem padrão
+}
 
 // Buscar Pokémon favoritados
 $favoritos = [];
@@ -30,8 +43,101 @@ while ($row = $result->fetch_assoc()) {
 
 <head>
     <meta charset="utf-8">
-    <title>Pokédex - <?= $name ?></title>
+    <title>Pokédex - <?= htmlspecialchars($name) ?></title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* === Estilo da imagem de perfil === */
+        .screen {
+            width: 180px;
+            height: 180px;
+            overflow: hidden;
+            border-radius: 12px;
+            border: 3px solid #d62828;
+            background-color: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto;
+            box-shadow: 0 0 12px rgba(0, 0, 0, 0.4);
+        }
+
+        .screen img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+        }
+
+        /* === Upload abaixo da imagem === */
+        .upload-area {
+            text-align: center;
+            margin-top: 12px;
+        }
+
+        .upload-area label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 1px 1px 2px #000;
+        }
+
+        .upload-area input[type="file"] {
+            display: none;
+        }
+
+        /* Botão estilizado */
+        .upload-btn {
+            display: inline-block;
+            background-color: #ffcb05;
+            color: #2a75bb;
+            font-weight: bold;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+            font-size: 14px;
+        }
+
+        .upload-btn:hover {
+            background-color: #f8b700;
+            transform: scale(1.05);
+        }
+
+        .submit-btn {
+            display: inline-block;
+            background-color: #2a75bb;
+            color: #fff;
+            font-weight: bold;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-left: 8px;
+            font-size: 14px;
+        }
+
+        .submit-btn:hover {
+            background-color: #1d5e9b;
+            transform: scale(1.05);
+        }
+
+        /* === Geral === */
+        body {
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center center;
+        }
+
+        .info {
+            text-align: center;
+            margin-top: 10px;
+            color: #fff;
+            text-shadow: 1px 1px 3px #000;
+        }
+    </style>
 </head>
 
 <body>
@@ -50,8 +156,19 @@ while ($row = $result->fetch_assoc()) {
                 </div>
             </div>
 
+            <!-- Imagem de perfil -->
             <div class="screen">
-                <img src="<?= $image ?>" alt="Imagem do usuário" style="max-width: 100%; height: auto;">
+                <img src="<?= htmlspecialchars($image) ?>" alt="Imagem do usuário">
+            </div>
+
+            <!-- Formulário abaixo da imagem -->
+            <div class="upload-area">
+                <form id="uploadForm" action="upload_imagem.php" method="post" enctype="multipart/form-data">
+                    <label for="nova_imagem">Alterar imagem de perfil:</label>
+                    <label class="upload-btn" for="nova_imagem">Escolher imagem</label>
+                    <input type="file" name="nova_imagem" id="nova_imagem" accept="image/*" required>
+                    <button type="submit" class="submit-btn">Enviar</button>
+                </form>
             </div>
 
             <div class="info">
@@ -138,6 +255,7 @@ while ($row = $result->fetch_assoc()) {
             </div>
         </div>
     </div>
+
     <script>
         // Troca de fundo
         const bgButton = document.getElementById("changeBgBtn");
@@ -148,9 +266,6 @@ while ($row = $result->fetch_assoc()) {
         ];
         let currentBgIndex = localStorage.getItem("bgIndex") ? parseInt(localStorage.getItem("bgIndex")) : 0;
         body.style.backgroundImage = `url('${backgrounds[currentBgIndex]}')`;
-        body.style.backgroundSize = "cover";
-        body.style.backgroundRepeat = "no-repeat";
-        body.style.backgroundPosition = "center center";
         bgButton.addEventListener("click", () => {
             currentBgIndex = (currentBgIndex + 1) % backgrounds.length;
             body.style.backgroundImage = `url('${backgrounds[currentBgIndex]}')`;
@@ -177,11 +292,6 @@ while ($row = $result->fetch_assoc()) {
                 pokedex.style.animationPlayState = 'running';
                 localStorage.setItem('pokedexAnimation', 'running');
             }
-        });
-
-        window.addEventListener('DOMContentLoaded', () => {
-            const savedState = localStorage.getItem('pokedexAnimation');
-            if (savedState) pokedex.style.animationPlayState = savedState;
         });
     </script>
 </body>
